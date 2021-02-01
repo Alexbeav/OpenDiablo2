@@ -21,11 +21,9 @@ func (v *StreamWriter) GetBytes() []byte {
 	return v.data.Bytes()
 }
 
-// PushBytes writes a bytes to the stream
-func (v *StreamWriter) PushBytes(b ...byte) {
-	for _, i := range b {
-		v.data.WriteByte(i)
-	}
+// PushByte writes a byte to the stream
+func (v *StreamWriter) PushByte(val byte) {
+	v.data.WriteByte(val)
 }
 
 // PushInt16 writes a int16 word to the stream

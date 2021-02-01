@@ -35,10 +35,6 @@ const (
 
 // COF is a structure that represents a COF file.
 type COF struct {
-	// unknown bytes for header
-	unknownHeaderBytes []byte
-	// unknown bytes (first "body's" bytes)
-	unknown1           []byte
 	NumberOfDirections int
 	FramesPerDirection int
 	NumberOfLayers     int
@@ -50,7 +46,6 @@ type COF struct {
 }
 
 // Load loads a COF file.
-// nolint:funlen // no need to change
 func Load(fileData []byte) (*COF, error) {
 	result := &COF{}
 	streamReader := d2datautils.CreateStreamReader(fileData)
@@ -67,19 +62,9 @@ func Load(fileData []byte) (*COF, error) {
 	result.NumberOfLayers = int(b[headerNumLayers])
 	result.FramesPerDirection = int(b[headerFramesPerDir])
 	result.NumberOfDirections = int(b[headerNumDirs])
-	result.unknownHeaderBytes = b[headerNumDirs+1 : headerSpeed]
 	result.Speed = int(b[headerSpeed])
 
-	// read unknown bytes
-	// previous streamReader.SkipBytes(3)
-	for i := 0; i < 3; i++ {
-		b, errSR := streamReader.ReadByte()
-		if errSR != nil {
-			return nil, errSR
-		}
-
-		result.unknown1 = append(result.unknown1, b)
-	}
+	streamReader.SkipBytes(3) //nolint:gomnd // Unknown data
 
 	result.CofLayers = make([]CofLayer, result.NumberOfLayers)
 	result.CompositeLayers = make(map[d2enum.CompositeType]int)
@@ -98,7 +83,6 @@ func Load(fileData []byte) (*COF, error) {
 		layer.Transparent = b[layerTransparent] > 0
 		layer.DrawEffect = d2enum.DrawEffect(b[layerDrawEffect])
 
-		layer.weaponClassByte = b[layerWeaponClass:]
 		layer.WeaponClass = d2enum.WeaponClassFromString(strings.TrimSpace(strings.ReplaceAll(
 			string(b[layerWeaponClass:]), badCharacter, "")))
 
@@ -140,6 +124,7 @@ func Load(fileData []byte) (*COF, error) {
 
 	return result, nil
 }
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -196,3 +181,5 @@ func (c *COF) Unmarshal() []byte {
 
 	return sw.GetBytes()
 }
+=======
+>>>>>>> parent of 60c1b4e... Merge pull request #1038 from gucio321/data-converting
