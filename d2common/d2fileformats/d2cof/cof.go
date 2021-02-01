@@ -141,9 +141,15 @@ func Load(fileData []byte) (*COF, error) {
 	return result, nil
 }
 
+<<<<<<< HEAD
 // Marshal encodes COF back into byte slince
 func (c *COF) Marshal() []byte {
 	sw := d2datautils.CreateStreamWriter()
+=======
+// Unmarshal unmarshals COF into byte slince
+func (c *COF) Unmarshal() []byte {
+	var result []byte
+>>>>>>> parent of c5eb602... Update cof.go
 
 	sw.PushBytes(byte(c.NumberOfLayers))
 	sw.PushBytes(byte(c.FramesPerDirection))
