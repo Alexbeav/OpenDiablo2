@@ -56,7 +56,6 @@ const (
 	ButtonTypeTabBlank           ButtonType = 36
 	ButtonTypeBlankQuestBtn      ButtonType = 37
 	ButtonTypeAddSkill           ButtonType = 38
-	ButtonTypePartyButton        ButtonType = 39
 
 	ButtonNoFixedWidth  int = -1
 	ButtonNoFixedHeight int = -1
@@ -205,16 +204,12 @@ const (
 	buttonAddSkillSegmentsY     = 1
 	buttonAddSkillDisabledFrame = 2
 
-	partyButtonSegmentsX     = 1
-	partyButtonSegmentsY     = 1
-	partyButtonDisabledFrame = -1
-
 	pressedButtonOffset = 2
 )
 
 // nolint:funlen // cant reduce
-func getButtonLayouts() map[ButtonType]*ButtonLayout {
-	return map[ButtonType]*ButtonLayout{
+func getButtonLayouts() map[ButtonType]ButtonLayout {
+	return map[ButtonType]ButtonLayout{
 		ButtonTypeWide: {
 			XSegments:        buttonWideSegmentsX,
 			YSegments:        buttonWideSegmentsY,
@@ -770,21 +765,6 @@ func getButtonLayouts() map[ButtonType]*ButtonLayout {
 			FixedWidth:       ButtonNoFixedWidth,
 			FixedHeight:      ButtonNoFixedHeight,
 		},
-		ButtonTypePartyButton: {
-			XSegments:        partyButtonSegmentsX,
-			YSegments:        partyButtonSegmentsY,
-			DisabledFrame:    partyButtonDisabledFrame,
-			DisabledColor:    lightGreyAlpha75,
-			TextOffset:       buttonWideTextOffset,
-			ResourceName:     d2resource.PartyButton,
-			PaletteName:      d2resource.PaletteUnits,
-			FontPath:         d2resource.FontFormal10,
-			AllowFrameChange: true,
-			HasImage:         true,
-			FixedWidth:       ButtonNoFixedWidth,
-			FixedHeight:      ButtonNoFixedHeight,
-			LabelColor:       whiteAlpha100,
-		},
 	}
 }
 
@@ -794,7 +774,7 @@ var _ ClickableWidget = &Button{}
 // Button defines a standard wide UI button
 type Button struct {
 	*BaseWidget
-	buttonLayout          *ButtonLayout
+	buttonLayout          ButtonLayout
 	normalSurface         d2interface.Surface
 	pressedSurface        d2interface.Surface
 	toggledSurface        d2interface.Surface
@@ -809,38 +789,6 @@ type Button struct {
 
 // NewButton creates an instance of Button
 func (ui *UIManager) NewButton(buttonType ButtonType, text string) *Button {
-	buttonLayout := getButtonLayouts()[buttonType]
-
-	btn := ui.createButton(buttonLayout, text)
-
-	return btn
-}
-
-// NewDefaultButton creates a new button with default settings
-func (ui *UIManager) NewDefaultButton(path string, frame int) *Button {
-	layout := &ButtonLayout{
-		XSegments:        1,
-		YSegments:        1,
-		DisabledFrame:    frame,
-		DisabledColor:    whiteAlpha100,
-		ResourceName:     path,
-		PaletteName:      d2resource.PaletteSky,
-		BaseFrame:        frame,
-		Toggleable:       true,
-		FontPath:         d2resource.Font16,
-		AllowFrameChange: true,
-		HasImage:         true,
-		FixedWidth:       ButtonNoFixedWidth,
-		FixedHeight:      ButtonNoFixedHeight,
-	}
-
-	btn := ui.createButton(layout, "")
-
-	return btn
-}
-
-// createButton creates button using input layout and text
-func (ui *UIManager) createButton(layout *ButtonLayout, text string) *Button {
 	base := NewBaseWidget(ui)
 	base.SetVisible(true)
 
@@ -850,23 +798,24 @@ func (ui *UIManager) createButton(layout *ButtonLayout, text string) *Button {
 		pressed:    false,
 	}
 
-	btn.buttonLayout = layout
+	buttonLayout := getButtonLayouts()[buttonType]
+	btn.buttonLayout = buttonLayout
+	lbl := ui.NewLabel(buttonLayout.FontPath, d2resource.PaletteUnits)
 
-	lbl := ui.NewLabel(layout.FontPath, d2resource.PaletteUnits)
 	lbl.SetText(text)
-	lbl.Color[0] = d2util.Color(layout.LabelColor)
+	lbl.Color[0] = d2util.Color(buttonLayout.LabelColor)
 	lbl.Alignment = HorizontalAlignCenter
 
-	buttonSprite, err := ui.NewSprite(layout.ResourceName, layout.PaletteName)
+	buttonSprite, err := ui.NewSprite(buttonLayout.ResourceName, buttonLayout.PaletteName)
 	if err != nil {
 		ui.Error(err.Error())
 		return nil
 	}
 
-	if layout.FixedWidth > 0 {
-		btn.width = layout.FixedWidth
+	if buttonLayout.FixedWidth > 0 {
+		btn.width = buttonLayout.FixedWidth
 	} else {
-		for i := 0; i < layout.XSegments; i++ {
+		for i := 0; i < buttonLayout.XSegments; i++ {
 			w, _, frameSizeErr := buttonSprite.GetFrameSize(i)
 			if frameSizeErr != nil {
 				ui.Error(frameSizeErr.Error())
@@ -877,11 +826,11 @@ func (ui *UIManager) createButton(layout *ButtonLayout, text string) *Button {
 		}
 	}
 
-	if layout.FixedHeight > 0 {
-		btn.height = layout.FixedHeight
+	if buttonLayout.FixedHeight > 0 {
+		btn.height = buttonLayout.FixedHeight
 	} else {
-		for i := 0; i < layout.YSegments; i++ {
-			_, h, frameSizeErr := buttonSprite.GetFrameSize(i * layout.YSegments)
+		for i := 0; i < buttonLayout.YSegments; i++ {
+			_, h, frameSizeErr := buttonSprite.GetFrameSize(i * buttonLayout.YSegments)
 			if frameSizeErr != nil {
 				ui.Error(frameSizeErr.Error())
 				return nil
@@ -900,7 +849,7 @@ func (ui *UIManager) createButton(layout *ButtonLayout, text string) *Button {
 
 	ui.addWidget(btn) // important that this comes before prerenderStates!
 
-	btn.prerenderStates(buttonSprite, layout, lbl)
+	btn.prerenderStates(buttonSprite, &buttonLayout, lbl)
 
 	return btn
 }

@@ -223,7 +223,6 @@ func (v *Game) Render(screen d2interface.Surface) {
 }
 
 // Advance runs the update logic on the Gameplay screen
-// nolint:gocyclo // not need to change
 func (v *Game) Advance(elapsed float64) error {
 	v.soundEngine.Advance(elapsed)
 
@@ -279,12 +278,15 @@ func (v *Game) Advance(elapsed float64) error {
 
 	v.soundEnv.Advance(elapsed)
 
+<<<<<<< HEAD
 	if v.gameControls != nil {
 		if v.gameControls.PartyPanel != nil {
 			v.gameControls.PartyPanel.UpdatePlayersList(v.gameClient.Players)
 		}
 	}
 
+=======
+>>>>>>> parent of e982430... Merge pull request #1031 from gucio321/party-screen
 	return nil
 }
 
@@ -299,7 +301,7 @@ func (v *Game) bindGameControls() error {
 		var err error
 		v.gameControls, err = d2player.NewGameControls(v.asset, v.renderer, player, v.gameClient.MapEngine,
 			v.escapeMenu, v.mapRenderer, v, v.terminal, v.uiManager, v.keyMap, v.audioProvider, v.logLevel,
-			v.gameClient.IsSinglePlayer(), v.gameClient.Players)
+			v.gameClient.IsSinglePlayer())
 
 		if err != nil {
 			return err

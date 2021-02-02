@@ -109,7 +109,6 @@ func NewGameControls(
 	audioProvider d2interface.AudioProvider,
 	l d2util.LogLevel,
 	isSinglePlayer bool,
-	players map[string]*d2mapentity.Player,
 ) (*GameControls, error) {
 	var inventoryRecordKey string
 
@@ -173,7 +172,10 @@ func NewGameControls(
 	inventoryRecord := asset.Records.Layout.Inventory[inventoryRecordKey]
 
 	heroStatsPanel := NewHeroStatsPanel(asset, ui, hero.Name(), hero.Class, l, hero.Stats)
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of e982430... Merge pull request #1031 from gucio321/party-screen
 	questLog := NewQuestLog(asset, ui, l, audioProvider, hero.Act)
 
 	inventory, err := NewInventory(asset, ui, l, hero.Gold, inventoryRecord)
@@ -280,7 +282,6 @@ type GameControls struct {
 	hud                    *HUD
 	skilltree              *skillTree
 	heroStatsPanel         *HeroStatsPanel
-	PartyPanel             *PartyPanel
 	questLog               *QuestLog
 	HelpOverlay            *HelpOverlay
 	bottomMenuRect         *d2geom.Rectangle
@@ -367,10 +368,6 @@ func (g *GameControls) OnKeyDown(event d2interface.KeyEvent) bool {
 		g.updateLayout()
 	case d2enum.ToggleInventoryPanel:
 		g.toggleInventoryPanel()
-	case d2enum.TogglePartyPanel:
-		if !g.isSinglePlayer {
-			g.togglePartyPanel()
-		}
 	case d2enum.ToggleSkillTreePanel:
 		g.toggleSkilltreePanel()
 	case d2enum.ToggleCharacterPanel:
@@ -505,10 +502,13 @@ func (g *GameControls) OnMouseMove(event d2interface.MouseMoveEvent) bool {
 	}
 
 	g.hud.OnMouseMove(event)
+<<<<<<< HEAD
 
 	if g.PartyPanel != nil {
 		g.PartyPanel.OnMouseMove(event)
 	}
+=======
+>>>>>>> parent of e982430... Merge pull request #1031 from gucio321/party-screen
 
 	return false
 }
@@ -567,11 +567,14 @@ func (g *GameControls) OnMouseButtonDown(event d2interface.MouseEvent) bool {
 
 func (g *GameControls) clearLeftScreenSide() {
 	g.heroStatsPanel.Close()
+<<<<<<< HEAD
 
 	if g.PartyPanel != nil {
 		g.PartyPanel.Close()
 	}
 
+=======
+>>>>>>> parent of e982430... Merge pull request #1031 from gucio321/party-screen
 	g.questLog.Close()
 	g.hud.skillSelectMenu.ClosePanels()
 	g.updateLayout()
@@ -619,10 +622,6 @@ func (g *GameControls) openRightPanel(panel Panel) {
 
 func (g *GameControls) toggleHeroStatsPanel() {
 	g.openLeftPanel(g.heroStatsPanel)
-}
-
-func (g *GameControls) togglePartyPanel() {
-	g.openLeftPanel(g.PartyPanel)
 }
 
 func (g *GameControls) onCloseHeroStatsPanel() {
@@ -690,11 +689,14 @@ func (g *GameControls) Load() {
 	g.inventory.Load()
 	g.skilltree.load()
 	g.heroStatsPanel.Load()
+<<<<<<< HEAD
 
 	if g.PartyPanel != nil {
 		g.PartyPanel.Load()
 	}
 
+=======
+>>>>>>> parent of e982430... Merge pull request #1031 from gucio321/party-screen
 	g.questLog.Load()
 	g.HelpOverlay.Load()
 
@@ -703,7 +705,6 @@ func (g *GameControls) Load() {
 
 	miniPanelActions := &miniPanelActions{
 		characterToggle: g.toggleHeroStatsPanel,
-		partyToggle:     g.togglePartyPanel,
 		inventoryToggle: g.toggleInventoryPanel,
 		skilltreeToggle: g.toggleSkilltreePanel,
 		menuToggle:      g.openEscMenu,
@@ -718,10 +719,13 @@ func (g *GameControls) Advance(elapsed float64) error {
 	g.hud.Advance(elapsed)
 	g.inventory.Advance(elapsed)
 	g.questLog.Advance(elapsed)
+<<<<<<< HEAD
 
 	if g.PartyPanel != nil {
 		g.PartyPanel.Advance(elapsed)
 	}
+=======
+>>>>>>> parent of e982430... Merge pull request #1031 from gucio321/party-screen
 
 	if err := g.escapeMenu.Advance(elapsed); err != nil {
 		return err
@@ -752,6 +756,7 @@ func (g *GameControls) updateLayout() {
 }
 
 func (g *GameControls) isLeftPanelOpen() bool {
+<<<<<<< HEAD
 	var partyPanel bool
 
 	if g.PartyPanel != nil {
@@ -761,6 +766,9 @@ func (g *GameControls) isLeftPanelOpen() bool {
 	}
 
 	return g.heroStatsPanel.IsOpen() || partyPanel || g.questLog.IsOpen() || g.inventory.moveGoldPanel.IsOpen()
+=======
+	return g.heroStatsPanel.IsOpen() || g.questLog.IsOpen() || g.inventory.moveGoldPanel.IsOpen()
+>>>>>>> parent of e982430... Merge pull request #1031 from gucio321/party-screen
 }
 
 func (g *GameControls) isRightPanelOpen() bool {

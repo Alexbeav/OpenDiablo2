@@ -125,6 +125,7 @@ func Load(fileData []byte) (*COF, error) {
 	return result, nil
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 <<<<<<< HEAD
